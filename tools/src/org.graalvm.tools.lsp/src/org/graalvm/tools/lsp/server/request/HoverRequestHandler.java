@@ -1,23 +1,5 @@
 package org.graalvm.tools.lsp.server.request;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Future;
-import java.util.logging.Level;
-
-import org.eclipse.lsp4j.Hover;
-import org.eclipse.lsp4j.MarkedString;
-import org.eclipse.lsp4j.jsonrpc.messages.Either;
-import org.graalvm.tools.lsp.api.ContextAwareExecutor;
-import org.graalvm.tools.lsp.instrument.LSOptions;
-import org.graalvm.tools.lsp.instrument.LSPInstrument;
-import org.graalvm.tools.lsp.server.utils.CoverageData;
-import org.graalvm.tools.lsp.server.utils.CoverageEventNode;
-import org.graalvm.tools.lsp.server.utils.SourceUtils;
-import org.graalvm.tools.lsp.server.utils.TextDocumentSurrogate;
-import org.graalvm.tools.lsp.server.utils.TextDocumentSurrogateMap;
-
 import com.oracle.truffle.api.TruffleException;
 import com.oracle.truffle.api.TruffleLogger;
 import com.oracle.truffle.api.frame.FrameSlot;
@@ -40,6 +22,23 @@ import com.oracle.truffle.api.nodes.LanguageInfo;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.source.Source;
 import com.oracle.truffle.api.source.SourceSection;
+import org.eclipse.lsp4j.Hover;
+import org.eclipse.lsp4j.MarkedString;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
+import org.graalvm.tools.lsp.api.ContextAwareExecutor;
+import org.graalvm.tools.lsp.instrument.LSOptions;
+import org.graalvm.tools.lsp.instrument.LSPInstrument;
+import org.graalvm.tools.lsp.server.utils.CoverageData;
+import org.graalvm.tools.lsp.server.utils.CoverageEventNode;
+import org.graalvm.tools.lsp.server.utils.SourceUtils;
+import org.graalvm.tools.lsp.server.utils.TextDocumentSurrogate;
+import org.graalvm.tools.lsp.server.utils.TextDocumentSurrogateMap;
+
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Future;
+import java.util.logging.Level;
 
 public class HoverRequestHandler extends AbstractRequestHandler {
     private static final TruffleLogger LOG = TruffleLogger.getLogger(LSPInstrument.ID, HoverRequestHandler.class);

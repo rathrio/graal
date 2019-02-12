@@ -1,24 +1,6 @@
 package org.graalvm.tools.lsp.server;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
-import java.util.function.Supplier;
-
+import com.google.gson.JsonPrimitive;
 import org.eclipse.lsp4j.CodeActionParams;
 import org.eclipse.lsp4j.CodeLens;
 import org.eclipse.lsp4j.CodeLensOptions;
@@ -73,7 +55,24 @@ import org.eclipse.lsp4j.services.WorkspaceService;
 import org.graalvm.tools.lsp.exceptions.DiagnosticsNotification;
 import org.graalvm.tools.lsp.exceptions.UnknownLanguageException;
 
-import com.google.gson.JsonPrimitive;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
+import java.util.function.Supplier;
 
 /**
  * A LSP4J {@link LanguageServer} implementation using TCP sockets as transportation layer for the
@@ -279,6 +278,8 @@ public final class LanguageServerImpl implements LanguageServer, LanguageClientA
     @Override
     public void didOpen(DidOpenTextDocumentParams params) {
         URI uri = URI.create(params.getTextDocument().getUri());
+
+        info.println("[Graal LSP] didOpen " + uri);
 
         if (!uri.getScheme().equals("file")) {
             client.showMessage(new MessageParams(MessageType.Error, "URI with schema other than 'file' are not supported yet. uri=" + uri.toString()));
