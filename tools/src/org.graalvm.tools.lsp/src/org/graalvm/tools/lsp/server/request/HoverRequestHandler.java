@@ -26,7 +26,6 @@ import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.MarkedString;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.graalvm.tools.lsp.api.ContextAwareExecutor;
-import org.graalvm.tools.lsp.instrument.LSOptions;
 import org.graalvm.tools.lsp.instrument.LSPInstrument;
 import org.graalvm.tools.lsp.server.audrey.AudreyClient;
 import org.graalvm.tools.lsp.server.utils.CoverageData;
@@ -39,7 +38,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
 
 public class HoverRequestHandler extends AbstractRequestHandler {
     private static final TruffleLogger LOG = TruffleLogger.getLogger(LSPInstrument.ID, HoverRequestHandler.class);
@@ -59,20 +57,23 @@ public class HoverRequestHandler extends AbstractRequestHandler {
         if (nodeAtCaret != null) {
             SourceSection hoverSection = ((Node) nodeAtCaret).getSourceSection();
 
-            LOG.log(Level.FINER, "Hover: SourceSection({0})", hoverSection.getCharacters());
-            if (surrogate.hasCoverageData()) {
-                List<CoverageData> coverages = surrogate.getCoverageData(hoverSection);
-                if (coverages != null) {
-                    return evalHoverInfos(coverages, hoverSection, surrogate.getLangId());
-                }
-            } else if (env.getOptions().get(LSOptions.LanguageDeveloperMode)) {
-                String sourceText = hoverSection.getCharacters().toString();
-                List<Either<String, MarkedString>> contents = new ArrayList<>();
-                contents.add(Either.forRight(new MarkedString(surrogate.getLangId(), sourceText)));
-                contents.add(Either.forLeft("Node class: " + nodeAtCaret.getClass().getSimpleName()));
-                contents.add(Either.forLeft("Tags: " + getTags(nodeAtCaret)));
-                return new Hover(contents, SourceUtils.sourceSectionToRange(hoverSection));
-            }
+            return audreyClient.hoverResults(hoverSection, nodeAtCaret);
+//            return new Hover(audreyContents, SourceUtils.sourceSectionToRange(hoverSection));
+
+//            LOG.log(Level.FINER, "Hover: SourceSection({0})", hoverSection.getCharacters());
+//            if (surrogate.hasCoverageData()) {
+//                List<CoverageData> coverages = surrogate.getCoverageData(hoverSection);
+//                if (coverages != null) {
+//                    return evalHoverInfos(coverages, hoverSection, surrogate.getLangId());
+//                }
+//            } else if (env.getOptions().get(LSOptions.LanguageDeveloperMode)) {
+//                String sourceText = hoverSection.getCharacters().toString();
+//                List<Either<String, MarkedString>> contents = new ArrayList<>();
+//                contents.add(Either.forRight(new MarkedString(surrogate.getLangId(), sourceText)));
+//                contents.add(Either.forLeft("Node class: " + nodeAtCaret.getClass().getSimpleName()));
+//                contents.add(Either.forLeft("Tags: " + getTags(nodeAtCaret)));
+//                return new Hover(contents, SourceUtils.sourceSectionToRange(hoverSection));
+//            }
         }
         return new Hover(new ArrayList<>());
     }
