@@ -111,7 +111,8 @@ suite = {
                 "org.graalvm.tools.lsp.api",
                 "truffle:TRUFFLE_API",
                 "truffle:TRUFFLE_NFI",
-                "LSP4J"
+                "LSP4J",
+                "JEDIS"
             ],
             "checkstyleVersion" : "8.8",
             "checkstyle": "org.graalvm.tools.lsp",
@@ -149,6 +150,31 @@ suite = {
     },
 
     "libraries": {
+        "COMMONS_POOL2" : {
+            "sha1" : "4a285ecdea96fd7b621091b334224c527ae420fb",
+            "maven" : {
+                "groupId" : "org.apache.commons",
+                "artifactId" : "commons-pool2",
+                "version" : "2.6.1",
+            }
+        },
+        "SLF4J" : {
+            "sha1" : "da76ca59f6a57ee3102f8f9bd9cee742973efa8a",
+            "maven" : {
+                "groupId" : "org.slf4j",
+                "artifactId" : "slf4j-api",
+                "version" : "1.7.25",
+            }
+        },
+        "JEDIS" : {
+            "sha1" : "4e8f7e393f17e197b29f7b9481004ede8e154dcb",
+            "maven" : {
+                "groupId" : "redis.clients",
+                "artifactId" : "jedis",
+                "version" : "3.0.1",
+            },
+            "dependencies" : ["SLF4J"],
+        },
         "LSP4J" : {
             "sha1" : "90e34b7c7e0257e3993ca5a939ae94f889d31340",
             "sourceSha1": "6dd33739fe6dc7f306b819d88a6f9a8f9279da51",
@@ -379,7 +405,8 @@ suite = {
                 "LSP-API",
                 "truffle:TRUFFLE_API",
                 "truffle:TRUFFLE_NFI",
-                "LSP4J"
+                "LSP4J",
+                "JEDIS",
             ],
         },
         "LSP-LAUNCHER": {
@@ -388,6 +415,7 @@ suite = {
                 "LSP-API",
                 "sdk:GRAAL_SDK",
                 "sdk:LAUNCHER_COMMON",
+                "JEDIS",
             ],
         },
     },

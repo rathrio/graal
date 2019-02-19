@@ -279,7 +279,7 @@ public final class LanguageServerImpl implements LanguageServer, LanguageClientA
     public void didOpen(DidOpenTextDocumentParams params) {
         URI uri = URI.create(params.getTextDocument().getUri());
 
-        info.println("[Graal LSP] didOpen " + uri);
+        info.println("[Audrey LSP] didOpen " + uri);
 
         if (!uri.getScheme().equals("file")) {
             client.showMessage(new MessageParams(MessageType.Error, "URI with schema other than 'file' are not supported yet. uri=" + uri.toString()));
@@ -460,7 +460,7 @@ public final class LanguageServerImpl implements LanguageServer, LanguageClientA
 
                     info.println("[Graal LSP] Starting server and listening on " + serverSocket.getLocalSocketAddress());
                     Socket clientSocket = serverSocket.accept();
-                    info.println("[Graal LSP] Client connected on " + clientSocket.getRemoteSocketAddress());
+                    info.println("[Graal LSP] AudreyClient connected on " + clientSocket.getRemoteSocketAddress());
 
                     ExecutorService lspRequestExecutor = Executors.newCachedThreadPool(new ThreadFactory() {
                         private final ThreadFactory factory = Executors.defaultThreadFactory();

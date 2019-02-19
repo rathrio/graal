@@ -28,6 +28,7 @@ import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.graalvm.tools.lsp.api.ContextAwareExecutor;
 import org.graalvm.tools.lsp.instrument.LSOptions;
 import org.graalvm.tools.lsp.instrument.LSPInstrument;
+import org.graalvm.tools.lsp.server.audrey.AudreyClient;
 import org.graalvm.tools.lsp.server.utils.CoverageData;
 import org.graalvm.tools.lsp.server.utils.CoverageEventNode;
 import org.graalvm.tools.lsp.server.utils.SourceUtils;
@@ -42,6 +43,7 @@ import java.util.logging.Level;
 
 public class HoverRequestHandler extends AbstractRequestHandler {
     private static final TruffleLogger LOG = TruffleLogger.getLogger(LSPInstrument.ID, HoverRequestHandler.class);
+    private final AudreyClient audreyClient = new AudreyClient();
 
     private CompletionRequestHandler completionHandler;
 
@@ -51,10 +53,12 @@ public class HoverRequestHandler extends AbstractRequestHandler {
     }
 
     public Hover hoverWithEnteredContext(URI uri, int line, int column) {
+        System.out.println("[Audrey LSP] hovering in " + uri + " on line " + line + ":" + column);
         TextDocumentSurrogate surrogate = surrogateMap.get(uri);
         InstrumentableNode nodeAtCaret = findNodeAtCaret(surrogate, line, column);
         if (nodeAtCaret != null) {
             SourceSection hoverSection = ((Node) nodeAtCaret).getSourceSection();
+
             LOG.log(Level.FINER, "Hover: SourceSection({0})", hoverSection.getCharacters());
             if (surrogate.hasCoverageData()) {
                 List<CoverageData> coverages = surrogate.getCoverageData(hoverSection);
