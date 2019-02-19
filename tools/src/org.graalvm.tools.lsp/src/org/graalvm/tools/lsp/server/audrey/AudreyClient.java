@@ -15,36 +15,6 @@ import java.util.stream.Collectors;
 //            final String rootNodeId = extractRootName(nearestRootNode);
 //            System.out.println("Root Node ID:" + rootNodeId);
 
-// TODO: Try this instead: https://stackoverflow.com/questions/4308554/simplest-way-to-read-json-from-a-url-in-java
-//
-//            try {
-//                final URL url = new URL("http://localhost:9292/samples");
-//                HttpURLConnection con = (HttpURLConnection) url.openConnection();
-//
-//                Map<String, String> parameters = new HashMap<>();
-//                parameters.put("root_node_id", "magnitude");
-//                con.setDoOutput(true);
-//                DataOutputStream out = new DataOutputStream(con.getOutputStream());
-//                out.writeBytes(ParameterStringBuilder.getParamsString(parameters));
-//                out.flush();
-//                out.close();
-//
-//                con.setRequestMethod("GET");
-//                con.setConnectTimeout(5000);
-//                con.setReadTimeout(5000);
-//                con.setRequestProperty("Content-Type", "application/json");
-//                con.connect();
-//
-//                final String responseMessage = con.getResponseMessage();
-//                System.out.println(responseMessage);
-//            } catch (MalformedURLException e) {
-//                e.printStackTrace();
-//            } catch (ProtocolException e) {
-//                e.printStackTrace();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-
 public class AudreyClient {
     private Set<Sample> samples;
 
