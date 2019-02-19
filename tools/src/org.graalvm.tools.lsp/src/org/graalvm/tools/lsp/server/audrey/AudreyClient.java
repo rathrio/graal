@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class AudreyClient {
     private Set<Sample> samples;
@@ -26,6 +27,7 @@ public class AudreyClient {
     private final Jedis jedis = new Jedis("localhost");
     private boolean enabled = false;
     private final HashSet<Class<? extends Tag>> tags = new HashSet<>();
+    private final Class<? extends Tag> readVariableTag = StandardTags.ReadVariableTag.class;
 
     public AudreyClient() {
         if (audreyProjectId == null || audreyProjectId.isEmpty()) {
@@ -64,9 +66,29 @@ public class AudreyClient {
     }
 
     public Hover hoverResults(final SourceSection hoverSection, final InstrumentableNode node) {
-        final Node nearestRoot = node.findNearestNodeAt(hoverSection.getCharIndex(), tags);
+        Node nearestRoot;
+        try {
+            nearestRoot = node.findNearestNodeAt(hoverSection.getCharIndex(), tags);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Hover(new ArrayList<>());
+        }
+
+        final String rootNodeId = extractRootName(nearestRoot);
+
+        final Set<Sample> results = new SampleSearch(samples)
+            .rootNodeId(rootNodeId)
+//            .source(hoverSection.getSource().getName())
+            .search()
+            .collect(Collectors.toSet());
+
+        final Stream<Sample> argumentSamples = results.stream().filter(Sample::isArgument);
+        final Stream<Sample> returnSamples = results.stream().filter(Sample::isReturn);
+
         List<Either<String, MarkedString>> contents = new ArrayList<>();
+        contents.add(Either.forLeft("Node under caret: " + node.toString() + "\n\n"));
         contents.add(Either.forLeft("Nearest root class: " + nearestRoot.toString()));
+
         return new Hover(contents, SourceUtils.sourceSectionToRange(hoverSection));
     }
 }

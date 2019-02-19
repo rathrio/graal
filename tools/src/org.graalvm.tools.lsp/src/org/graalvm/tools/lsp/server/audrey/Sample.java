@@ -44,6 +44,14 @@ public final class Sample {
         this.sourceCharacters = sourceSection.getCharacters();
     }
 
+    public boolean isArgument() {
+        return category.equals(Category.ARGUMENT);
+    }
+
+    public boolean isReturn() {
+        return category.equals(Category.RETURN);
+    }
+
     public String getRootNodeId() {
         return rootNodeId;
     }
