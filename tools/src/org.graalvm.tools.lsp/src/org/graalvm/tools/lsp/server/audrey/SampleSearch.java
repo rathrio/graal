@@ -85,7 +85,7 @@ public class SampleSearch {
         }
 
         if (source != null) {
-            stream = stream.filter(sample -> source.equals(sample.getSource()));
+            stream = stream.filter(sample -> sample.getSource().endsWith(source));
         }
 
         return stream;

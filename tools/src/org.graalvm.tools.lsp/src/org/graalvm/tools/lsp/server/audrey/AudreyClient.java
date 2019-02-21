@@ -11,15 +11,16 @@ import com.oracle.truffle.api.source.SourceSection;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.MarkedString;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
-import org.graalvm.tools.lsp.server.utils.SourceUtils;
 import redis.clients.jedis.Jedis;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class AudreyClient {
     private Set<Sample> samples;
@@ -67,28 +68,39 @@ public class AudreyClient {
 
     public Hover hoverResults(final SourceSection hoverSection, final InstrumentableNode node) {
         Node nearestRoot;
+        String rootNodeId;
         try {
             nearestRoot = node.findNearestNodeAt(hoverSection.getCharIndex(), tags);
+            rootNodeId = extractRootName(nearestRoot);
         } catch (Exception e) {
             e.printStackTrace();
             return new Hover(new ArrayList<>());
         }
 
-        final String rootNodeId = extractRootName(nearestRoot);
+        final Path fileName = Paths.get(hoverSection.getSource().getName()).getFileName();
 
         final Set<Sample> results = new SampleSearch(samples)
             .rootNodeId(rootNodeId)
-//            .source(hoverSection.getSource().getName())
+            .source(fileName.toString())
             .search()
             .collect(Collectors.toSet());
 
-        final Stream<Sample> argumentSamples = results.stream().filter(Sample::isArgument);
-        final Stream<Sample> returnSamples = results.stream().filter(Sample::isReturn);
-
         List<Either<String, MarkedString>> contents = new ArrayList<>();
-        contents.add(Either.forLeft("Node under caret: " + node.toString() + "\n\n"));
-        contents.add(Either.forLeft("Nearest root class: " + nearestRoot.toString()));
 
-        return new Hover(contents, SourceUtils.sourceSectionToRange(hoverSection));
+        final Optional<Sample> argument = results.stream().filter(Sample::isArgument).findFirst();
+        if (argument.isPresent()) {
+            final Sample argumentSample = argument.get();
+            contents.add(Either.forLeft("(parameter) " + argumentSample.getIdentifier() + ": " + argumentSample.getMetaObject() + ", e.g. " + argumentSample.getValue() + "\n"));
+        }
+
+        final Optional<Sample> returnSample = results.stream().filter(Sample::isReturn).findFirst();
+        if (returnSample.isPresent()) {
+            final Sample rSample = returnSample.get();
+            contents.add(Either.forLeft("\n\nReturns a " +  rSample.getMetaObject() + ", e.g. " + rSample.getValue() + "\n"));
+        }
+
+//        return new Hover(contents, SourceUtils.sourceSectionToRange(hoverSection));
+        return new Hover(contents);
+
     }
 }
